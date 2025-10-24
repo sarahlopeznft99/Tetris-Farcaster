@@ -1,8 +1,8 @@
 {
   "accountAssociation": {
-    "header": "eyJmaWQiOjUyNjk5MiwidHlwZSI6ImF1dGgiLCJrZXkiOiIweDQ3ZGQ2NjQ0YWRjMDUwZWVlOTQxNDNCZUZhN0Y1QTJmNDU1RDNjNzMifQ",
+    "header": "eyJmaWQiOjEwODQzNTcsInR5cGUiOiJjdXN0b2R5Iiwia2V5IjoiMHgwN2JEMTU1RjYxN0RhRTUwZTRDNTQzZTc2QjBkRTcxRWEyMTQyOWUxIn0",
     "payload": "eyJkb21haW4iOiJ0ZXRyaXMtZmFyY2FzdGVyLnZlcmNlbC5hcHAifQ",
-    "signature": "ecOWfY4PZ9DwWQs1eu+/QOkAApJ0tj0jR+0LLZOnXaJCr95gGg2u7Vr9k3rDiLMikZf7LxnzyrcMcWGN0F9pSRw="
+    "signature": "p1gF5rYrxy9vXWCtC71YmhwOhAa2QcHdmmg+vqrjk0QYT1Jnvlo3ewn6EeqId5XRdK01UbZwMlCDKchkx2+/Uxw="
   },
   "miniapp": {
     "version": "1",
@@ -13,6 +13,6 @@
     "buttonTitle": "Play Tetris",
     "splashImageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/Tetris_Gameplay.jpg/640px-Tetris_Gameplay.jpg",
     "splashBackgroundColor": "#000000",
-    "description": "Play the classic Tetris game directly in your Farcaster feed. Rotate, drop, and clear lines!"
+    "description": "Play the classic Tetris game directly inside Farcaster. Rotate, drop, and clear lines to win!"
   }
 }
