@@ -7,11 +7,11 @@
   "miniapp": {
     "version": "1",
     "name": "TETRIS GAME",
-    "iconUrl": "https://upload.wikimedia.org/wikipedia/commons/7/7c/Tetris.svg",
+    "iconUrl": "https://tetris.wiki/images/5/52/Tetris_%28N3TWORK%29_icon.png?20200702021314",
     "homeUrl": "https://tetris-farcaster.vercel.app/",
-    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/Tetris_Gameplay.jpg/640px-Tetris_Gameplay.jpg",
+    "imageUrl": "https://tetris.wiki/images/5/52/Tetris_%28N3TWORK%29_icon.png?20200702021314",
     "buttonTitle": "Play Tetris",
-    "splashImageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/Tetris_Gameplay.jpg/640px-Tetris_Gameplay.jpg",
+    "splashImageUrl": "https://tetris.wiki/images/5/52/Tetris_%28N3TWORK%29_icon.png?20200702021314",
     "splashBackgroundColor": "#000000",
     "description": "Play the classic Tetris game directly inside Farcaster. Rotate, drop, and clear lines to win!"
   }
