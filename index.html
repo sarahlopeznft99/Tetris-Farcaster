@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tetris Mini App</title>
+  
+  <!-- Farcaster Frame Meta Tags -->
+  <meta property="fc:frame" content="vNext" />
+  <meta property="fc:frame:image" content="https://via.placeholder.com/1200x630/0b0e1a/facc15?text=Tetris+Game" />
+  <meta property="fc:frame:button:1" content="Play Tetris 🎮" />
+  <meta property="fc:frame:button:1:action" content="link" />
+  <meta property="fc:frame:button:1:target" content="https://YOUR-DOMAIN.vercel.app/" />
+  
+  <!-- Open Graph Meta Tags -->
+  <meta property="og:title" content="Tetris Game" />
+  <meta property="og:description" content="Play classic Tetris! Use arrow keys to move and rotate pieces." />
+  <meta property="og:image" content="https://via.placeholder.com/1200x630/0b0e1a/facc15?text=Tetris+Game" />
+  
+  <style>
+    :root {
+      --bg: #0b0e1a;
+      --fg: #e6e6e6;
+      --yellow: #facc15;
+      --yellow-hover: #eab308;
+    }
+    body {
+      margin: 0;
+      font-family: system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .card {
+      background: #11152a;
+      padding: 24px;
+      border-radius: 14px;
+      box-shadow: 0 8px 24px rgba(0,0,0,.35);
+      max-width: 320px;
+      text-align: center;
+    }
+    h1.title {
+      margin-top: 0;
+      font-size: 20px;
+      font-weight: 700;
+    }
+    p.muted {
+      color: #9ca3af;
+      font-size: 14px;
+      margin: 8px 0 16px;
+    }
+    .row {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+    }
+    button {
+      border: none;
+      border-radius: 10px;
+      padding: 8px 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.2s;
+    }
+    button.yellow-btn {
+      background: var(--yellow);
+      color: #1a1a1a;
+    }
+    button.yellow-btn:hover {
+      background: var(--yellow-hover);
+      transform: translateY(-1px);
+    }
+    .game-container {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+    .score-display {
+      background: #11152a;
+      padding: 16px 24px;
+      border-radius: 10px;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--yellow);
+    }
+    canvas {
+      background: #0b0e1a;
+      border-radius: 14px;
+      box-shadow: 0 8px 24px rgba(0,0,0,.4);
+      border: 3px solid #1a1f3a;
+    }
+    .controls {
+      color: #9ca3af;
+      font-size: 13px;
+      margin-top: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="card" id="intro">
+    <h1 class="title">🎮 Play Tetris</h1>
+    <p class="muted">Classic Tetris game! Use arrow keys to move and rotate pieces.</p>
+    <div class="row">
+      <button id="play" type="button" class="yellow-btn">Start Game</button>
+    </div>
+  </div>
+
+  <div class="game-container" id="gameArea">
+    <div class="score-display">Score: <span id="score">0</span></div>
+    <canvas id="board" width="240" height="480"></canvas>
+    <div class="controls">
+      ← → Move | ↑ Rotate | ↓ Drop
+    </div>
+  </div>
+
+  <script>
+  // Farcaster SDK Ready
+  (function() {
+    const notifyReady = () => {
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage({ 
+          type: 'ready',
+          method: 'farcaster' 
+        }, '*');
+      }
+      if (window.sdk && window.sdk.actions && typeof window.sdk.actions.ready === 'function') {
+        window.sdk.actions.ready();
+      }
+    };
+    
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', notifyReady);
+    } else {
+      notifyReady();
+    }
+    window.addEventListener('load', notifyReady);
+    setTimeout(notifyReady, 100);
+  })();
+
+  // Tetris Game Logic
+  (() => {
+    const COLS = 10, ROWS = 20, TILE = 24;
+    const canvas = document.getElementById("board");
+    const ctx = canvas.getContext("2d");
+    const intro = document.getElementById("intro");
+    const gameArea = document.getElementById("gameArea");
+    const playBtn = document.getElementById("play");
+    const scoreEl = document.getElementById("score");
+    
+    canvas.width = COLS * TILE;
+    canvas.height = ROWS * TILE;
+
+    const SHAPES = {
+      I:[[1,1,1,1]],
+      O:[[1,1],[1,1]],
+      T:[[0,1,0],[1,1,1]],
+      S:[[0,1,1],[1,1,0]],
+      Z:[[1,1,0],[0,1,1]],
+      J:[[1,0,0],[1,1,1]],
+      L:[[0,0,1],[1,1,1]]
+    };
+    
+    const COLORS = {
+      I:"#00f0f0", O:"#f0f000", T:"#a000f0", S:"#00f000",
+      Z:"#f00000", J:"#0000f0", L:"#f0a000"
+    };
+    
+    let grid = Array.from({length:ROWS},()=>Array(COLS).fill(0));
+    let current = null;
+    let dropTimer = 0, dropInterval = 500;
+    let lastTime = 0;
+    let score = 0;
+    let gameRunning = false;
+
+    function newPiece() {
+      const keys = Object.keys(SHAPES);
+      const type = keys[Math.floor(Math.random()*keys.length)];
+      const shape = SHAPES[type];
+      return { 
+        type, 
+        shape: shape.map(r=>r.slice()), 
+        x: Math.floor((COLS-shape[0].length)/2), 
+        y: -1 
+      };
+    }
+
+    function drawGrid(){
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      
+      // Draw grid
+      for(let y=0;y<ROWS;y++) {
+        for(let x=0;x<COLS;x++) {
+          if(grid[y][x]){
+            ctx.fillStyle = COLORS[grid[y][x]];
+            ctx.fillRect(x*TILE,y*TILE,TILE,TILE);
+            ctx.strokeStyle = "#0b0e1a";
+            ctx.strokeRect(x*TILE,y*TILE,TILE,TILE);
+          }
+        }
+      }
+      
+      // Draw current piece
+      if(current){
+        ctx.fillStyle = COLORS[current.type];
+        for(let y=0;y<current.shape.length;y++) {
+          for(let x=0;x<current.shape[0].length;x++) {
+            if(current.shape[y][x]) {
+              ctx.fillRect((current.x+x)*TILE,(current.y+y)*TILE,TILE,TILE);
+              ctx.strokeStyle = "#0b0e1a";
+              ctx.strokeRect((current.x+x)*TILE,(current.y+y)*TILE,TILE,TILE);
+            }
+          }
+        }
+      }
+    }
+
+    function collide(nx,ny,shape){
+      for(let y=0;y<shape.length;y++) {
+        for(let x=0;x<shape[0].length;x++) {
+          if(shape[y][x]){
+            const gx=nx+x, gy=ny+y;
+            if(gx<0||gx>=COLS||gy>=ROWS) return true;
+            if(gy>=0 && grid[gy][gx]) return true;
+          }
+        }
+      }
+      return false;
+    }
+
+    function place(){
+      for(let y=0;y<current.shape.length;y++) {
+        for(let x=0;x<current.shape[0].length;x++) {
+          if(current.shape[y][x] && current.y+y>=0) {
+            grid[current.y+y][current.x+x]=current.type;
+          }
+        }
+      }
+    }
+
+    function clearLines(){
+      let linesCleared = 0;
+      for(let y=ROWS-1;y>=0;y--){
+        if(grid[y].every(cell=>cell!==0)){
+          grid.splice(y,1);
+          grid.unshift(Array(COLS).fill(0));
+          linesCleared++;
+          y++;
+        }
+      }
+      if(linesCleared > 0) {
+        score += linesCleared * 100;
+        scoreEl.textContent = score;
+      }
+    }
+
+    function rotate(shape){
+      return shape[0].map((_,i)=>shape.map(row=>row[i]).reverse());
+    }
+
+    function step(){
+      if(!current) current=newPiece();
+      else {
+        const ny=current.y+1;
+        if(!collide(current.x,ny,current.shape)){
+          current.y=ny;
+        } else {
+          place();
+          clearLines();
+          current=newPiece();
+          if(collide(current.x,current.y,current.shape)){
+            gameRunning = false;
+            setTimeout(() => {
+              if(confirm(`Game Over! Score: ${score}\n\nPlay again?`)) {
+                resetGame();
+              } else {
+                intro.style.display = "block";
+                gameArea.style.display = "none";
+              }
+            }, 100);
+          }
+        }
+      }
+      drawGrid();
+    }
+
+    function update(time=0){
+      if(!gameRunning) return;
+      const delta=time-lastTime; 
+      lastTime=time;
+      dropTimer+=delta;
+      if(dropTimer>dropInterval){ 
+        step(); 
+        dropTimer=0; 
+      }
+      requestAnimationFrame(update);
+    }
+
+    function resetGame() {
+      grid = Array.from({length:ROWS},()=>Array(COLS).fill(0));
+      current = newPiece();
+      score = 0;
+      scoreEl.textContent = score;
+      dropTimer = 0;
+      lastTime = 0;
+      gameRunning = true;
+      requestAnimationFrame(update);
+    }
+
+    document.addEventListener("keydown", e=>{
+      if(!current || !gameRunning) return;
+      
+      if(e.key==="ArrowLeft" && !collide(current.x-1,current.y,current.shape)) {
+        current.x--;
+      }
+      else if(e.key==="ArrowRight" && !collide(current.x+1,current.y,current.shape)) {
+        current.x++;
+      }
+      else if(e.key==="ArrowUp"){
+        const r=rotate(current.shape);
+        if(!collide(current.x,current.y,r)) current.shape=r;
+      }
+      else if(e.key==="ArrowDown" && !collide(current.x,current.y+1,current.shape)) {
+        current.y++;
+        score += 1;
+        scoreEl.textContent = score;
+      }
+      
+      drawGrid();
+    });
+
+    playBtn.addEventListener("click", ()=>{
+      intro.style.display="none";
+      gameArea.style.display="flex";
+      resetGame();
+    });
+  })();
+  </script>
+</body>
+</html>
