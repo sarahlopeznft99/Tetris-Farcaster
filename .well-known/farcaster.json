@@ -11,7 +11,7 @@
     "homeUrl": "https://tetris-farcaster.vercel.app/",
     "imageUrl": "https://tetris.wiki/images/5/52/Tetris_%28N3TWORK%29_icon.png?20200702021314",
     "buttonTitle": "Play Tetris",
-    "splashImageUrl": "https://tetris.wiki/images/5/52/Tetris_%28N3TWORK%29_icon.png?20200702021314",
+    "splashImageUrl": "https://i.pinimg.com/474x/1b/94/6d/1b946d78b026c7c7416802db119cf8b0.jpg",
     "splashBackgroundColor": "#1a0f2e",
     "description": "Play the classic Tetris game directly inside Farcaster. Rotate, drop, and clear lines to win!"
   }
