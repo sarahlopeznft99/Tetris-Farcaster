@@ -11,7 +11,7 @@
     "homeUrl": "https://tetris-farcaster.vercel.app/",
     "imageUrl": "https://tetris.wiki/images/5/52/Tetris_%28N3TWORK%29_icon.png?20200702021314",
     "buttonTitle": "Start GAME",
-    "splashImageUrl": "https://static.vecteezy.com/system/resources/previews/009/656/801/large_2x/black-pixel-background-for-tetris-game-mosaic-blocks-vintage-videogame-backdrop-seamless-pattern-free-vector.jpg",
+    "splashImageUrl": "https://tetris.wiki/images/5/52/Tetris_%28N3TWORK%29_icon.png?20200702021314",
     "splashBackgroundColor": "#1a0f2e",
     "description": "Match with Farcaster users for timed 1-on-1 conversations based on shared interests"
   }
