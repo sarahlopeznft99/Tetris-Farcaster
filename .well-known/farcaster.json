@@ -7,11 +7,11 @@
   "miniapp": {
     "version": "1",
     "name": "Tetris",
-    "iconUrl": "https://play-lh.googleusercontent.com/hBHq2sqUokIyoMyhsLhjJELPn2sUKt3gKXMZtuTgwS2ovrhG5J0nmKT3acROB_q0zTo=w600-h300-pc0xffffff-pd",
+    "iconUrl": "https://tetris.wiki/images/5/52/Tetris_%28N3TWORK%29_icon.png?20200702021314",
     "homeUrl": "https://tetris-farcaster.vercel.app/",
-    "imageUrl": "https://play-lh.googleusercontent.com/hBHq2sqUokIyoMyhsLhjJELPn2sUKt3gKXMZtuTgwS2ovrhG5J0nmKT3acROB_q0zTo=w600-h300-pc0xffffff-pd",
+    "imageUrl": "https://tetris.wiki/images/5/52/Tetris_%28N3TWORK%29_icon.png?20200702021314",
     "buttonTitle": "Start GAME",
-    "splashImageUrl": "https://projects.arduinocontent.cc/cover-images/aec6b979-c133-4793-81b3-3df2fe863062.jpg",
+    "splashImageUrl": "https://static.vecteezy.com/system/resources/previews/009/656/801/large_2x/black-pixel-background-for-tetris-game-mosaic-blocks-vintage-videogame-backdrop-seamless-pattern-free-vector.jpg",
     "splashBackgroundColor": "#1a0f2e",
     "description": "Match with Farcaster users for timed 1-on-1 conversations based on shared interests"
   }
