@@ -6,13 +6,13 @@
   },
   "miniapp": {
     "version": "1",
-    "name": "Tetris",
-    "iconUrl": "https://tetris.wiki/images/5/52/Tetris_%28N3TWORK%29_icon.png?20200702021314",
+    "name": "TETRIS GAME 🎮",
+    "iconUrl": "https://tetris-farcaster.vercel.app/tetris-icon.png",
     "homeUrl": "https://tetris-farcaster.vercel.app/",
-    "imageUrl": "https://projects.arduinocontent.cc/cover-images/aec6b979-c133-4793-81b3-3df2fe863062.jpg",
-    "buttonTitle": "Start GAME",
-    "splashImageUrl": "https://projects.arduinocontent.cc/cover-images/aec6b979-c133-4793-81b3-3df2fe863062.jpg",
-    "splashBackgroundColor": "#1a0f2e",
-    "description": "Match with Farcaster users for timed 1-on-1 conversations based on shared interests"
+    "imageUrl": "https://tetris-farcaster.vercel.app/tetris-cover.png",
+    "buttonTitle": "Play Tetris",
+    "splashImageUrl": "https://tetris-farcaster.vercel.app/tetris-splash.png",
+    "splashBackgroundColor": "#0a0014",
+    "description": "Play the classic Tetris directly inside Farcaster. Rotate, drop, and clear lines to win!"
   }
 }
