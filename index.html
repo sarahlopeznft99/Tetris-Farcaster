@@ -1,204 +1,91 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tetris Game</title>
-  <style>
-    body {
-      margin: 0;
-      background: #000;
-      color: #fff;
-      font-family: "Arial", sans-serif;
-      text-align: center;
-      overflow: hidden;
-    }
-
-    #intro {
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      background: linear-gradient(180deg, #0a0014, #18003d);
-    }
-
-    h1 {
-      font-size: 3rem;
-      letter-spacing: 2px;
-      margin-bottom: 1rem;
-      color: #ffcc00;
-    }
-
-    #play {
-      background: #ffcc00;
-      border: none;
-      color: #000;
-      font-weight: bold;
-      padding: 16px 40px;
-      border-radius: 12px;
-      cursor: pointer;
-      font-size: 18px;
-      margin-top: 20px;
-      transition: background 0.3s;
-    }
-
-    #play:hover {
-      background: #ffee55;
-    }
-
-    canvas {
-      display: none;
-      background: #111;
-      margin: 0 auto;
-      margin-top: 20px;
-      border: 2px solid #ffcc00;
-    }
-
-    #score {
-      font-size: 1.2rem;
-      color: #ffcc00;
-      margin-top: 10px;
-      display: none;
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Tetris Game – Pay to Play</title>
+<style>
+  body { margin:0; font-family:Arial, sans-serif; background:#000; color:#fff; text-align:center; overflow:hidden; }
+  #intro {
+    height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:center;
+    background:linear-gradient(180deg,#0a0014,#18003d);
+  }
+  h1 { font-size:3rem; letter-spacing:2px; margin-bottom:1rem; color:#ffcc00; }
+  #play { background:#ffcc00; border:none; color:#000; font-weight:bold; padding:16px 40px; border-radius:12px;
+    cursor:pointer; font-size:18px; margin-top:20px; transition:background .3s; }
+  #play:hover { background:#ffee55; }
+  canvas { display:none; background:#111; margin:0 auto; border:2px solid #ffcc00; margin-top:20px; }
+  #score { display:none; color:#ffcc00; font-size:1.2rem; margin-top:10px; }
+  #status { margin-top:12px; font-size:14px; line-height:1.4; color:#ccc; max-width:360px; }
+  #status a { color:#66ccff; text-decoration:none; }
+</style>
 </head>
 
 <body>
   <div id="intro">
     <h1>🧱 TETRIS</h1>
-    <button id="play">Play Tetris</button>
+    <p>Pay a small Base fee to start the game.</p>
+    <button id="play">Pay & Play</button>
+    <div id="status"></div>
   </div>
 
   <div id="score">Score: 0</div>
   <canvas id="board"></canvas>
 
   <script>
-    const TILE = 24, COLS = 10, ROWS = 20;
-    const SHAPES = {
-      I: [[1,1,1,1]],
-      O: [[1,1],[1,1]],
-      T: [[0,1,0],[1,1,1]],
-      S: [[0,1,1],[1,1,0]],
-      Z: [[1,1,0],[0,1,1]],
-      J: [[1,0,0],[1,1,1]],
-      L: [[0,0,1],[1,1,1]]
-    };
-    const COLORS = {
-      I:"#00f0f0", O:"#f0f000", T:"#a000f0",
-      S:"#00f000", Z:"#f00000", J:"#0000f0", L:"#f0a000"
-    };
+    // === TETRIS GAME CODE ===
+    const TILE=24, COLS=10, ROWS=20;
+    const SHAPES={I:[[1,1,1,1]],O:[[1,1],[1,1]],T:[[0,1,0],[1,1,1]],S:[[0,1,1],[1,1,0]],Z:[[1,1,0],[0,1,1]],J:[[1,0,0],[1,1,1]],L:[[0,0,1],[1,1,1]]};
+    const COLORS={I:"#00f0f0",O:"#f0f000",T:"#a000f0",S:"#00f000",Z:"#f00000",J:"#0000f0",L:"#f0a000"};
+    let grid,current,ctx,canvas,score=0,dropTimer=0,dropInterval=600;
+    function newPiece(){const t=Object.keys(SHAPES);const type=t[Math.floor(Math.random()*t.length)];return{type,shape:SHAPES[type].map(r=>r.slice()),x:3,y:0};}
+    function collide(x,y,shape){return shape.some((r,dy)=>r.some((v,dx)=>v&&(grid[y+dy]?.[x+dx]||x+dx<0||x+dx>=COLS||y+dy>=ROWS)));}
+    function place(){current.shape.forEach((r,dy)=>r.forEach((v,dx)=>{if(v)grid[current.y+dy][current.x+dx]=current.type;}));}
+    function clearLines(){let c=0;grid=grid.filter(r=>{if(r.every(v=>v)){c++;return false;}return true;});while(grid.length<ROWS)grid.unshift(Array(COLS).fill(0));if(c>0){score+=c*100;document.getElementById("score").textContent="Score: "+score;}}
+    function draw(){ctx.clearRect(0,0,canvas.width,canvas.height);grid.forEach((r,y)=>r.forEach((c,x)=>{if(c){ctx.fillStyle=COLORS[c];ctx.fillRect(x*TILE,y*TILE,TILE-1,TILE-1);}}));ctx.fillStyle=COLORS[current.type];current.shape.forEach((r,dy)=>r.forEach((v,dx)=>{if(v)ctx.fillRect((current.x+dx)*TILE,(current.y+dy)*TILE,TILE-1,TILE-1);}));}
+    function step(){if(!collide(current.x,current.y+1,current.shape))current.y++;else{place();clearLines();current=newPiece();if(collide(current.x,current.y,current.shape)){alert("Game Over! Score: "+score);window.location.reload();}}}
+    function update(t=0){const dt=t-dropTimer;if(dt>dropInterval){step();dropTimer=t;}draw();requestAnimationFrame(update);}
+    function rotate(shape){return shape[0].map((_,i)=>shape.map(r=>r[i]).reverse());}
+    function initGrid(){grid=Array.from({length:ROWS},()=>Array(COLS).fill(0));}
+    function startGame(){document.getElementById("intro").style.display="none";document.getElementById("score").style.display="block";canvas=document.getElementById("board");canvas.style.display="block";canvas.width=COLS*TILE;canvas.height=ROWS*TILE;ctx=canvas.getContext("2d");score=0;initGrid();current=newPiece();dropTimer=0;update();}
+    document.addEventListener("keydown",e=>{if(!current)return;if(e.key==="ArrowLeft"&&!collide(current.x-1,current.y,current.shape))current.x--;else if(e.key==="ArrowRight"&&!collide(current.x+1,current.y,current.shape))current.x++;else if(e.key==="ArrowDown"&&!collide(current.x,current.y+1,current.shape))current.y++;else if(e.key==="ArrowUp"){const r=rotate(current.shape);if(!collide(current.x,current.y,r))current.shape=r;}});
+  </script>
 
-    let grid, current, ctx, canvas;
-    let score = 0;
-    let dropTimer = 0, dropInterval = 600;
+  <!-- === FARCASTER MINIAPP PAYMENT === -->
+  <script type="module">
+    import { sdk } from 'https://esm.sh/@farcaster/miniapp-sdk';
+    sdk.actions.ready();
 
-    function newPiece(){
-      const types = Object.keys(SHAPES);
-      const type = types[Math.floor(Math.random()*types.length)];
-      return { type, shape: SHAPES[type].map(r => r.slice()), x: 3, y: 0 };
+    const RECIPIENT = "0xf19b46a5aE904009006b1e06DFb842856cb97C6f"; // replace with your address
+    const AMOUNT_ETH = "0.00001";
+    const USE_BASE_SEPOLIA = false;
+    const BASE_MAINNET = { chainId:"0x2105", explorer:"https://basescan.org/tx/" };
+    const BASE_SEPOLIA = { chainId:"0x14a34", explorer:"https://sepolia.basescan.org/tx/" };
+    const TARGET = USE_BASE_SEPOLIA ? BASE_SEPOLIA : BASE_MAINNET;
+
+    const statusEl = document.getElementById("status");
+    const playBtn = document.getElementById("play");
+
+    function parseEther(x){const [w,f=""]=String(x).split(".");const frac=(f+"0".repeat(18)).slice(0,18);return"0x"+(BigInt(w)*10n**18n+BigInt(frac)).toString(16);}
+    async function getProvider(){try{const p=await sdk.wallet.getEthereumProvider();if(p)return p;}catch{}return window.ethereum??null;}
+    async function ensureChain(p,chainId){const c=(await p.request({method:"eth_chainId"}))?.toLowerCase();if(c===chainId.toLowerCase())return;try{await p.request({method:"wallet_switchEthereumChain",params:[{chainId}]});}catch(e){if(e?.code===4902){await p.request({method:"wallet_addEthereumChain",params:[{chainId}]});await p.request({method:"wallet_switchEthereumChain",params:[{chainId}]});}else throw e;}}
+    async function requiredPayment(){statusEl.innerHTML="<b>Connecting wallet…</b>";const provider=await getProvider();if(!provider){statusEl.innerHTML+="<div>No wallet detected.</div>";throw new Error("NO_PROVIDER");}
+      const [from]=await provider.request({method:"eth_requestAccounts"});await ensureChain(provider,TARGET.chainId);
+      statusEl.innerHTML+=`<div>Sending ${AMOUNT_ETH} ETH to ${RECIPIENT.slice(0,6)}...${RECIPIENT.slice(-4)}</div>`;
+      const hash=await provider.request({method:"eth_sendTransaction",params:[{from,to:RECIPIENT,value:parseEther(AMOUNT_ETH)}]});
+      statusEl.innerHTML+=`<div class="ok">TX sent! <a target="_blank" href="${TARGET.explorer}${hash}">View TX</a></div>`;return hash;
     }
 
-    function collide(x,y,shape){
-      return shape.some((r,dy)=>r.some((v,dx)=>v && (
-        grid[y+dy]?.[x+dx] ||
-        x+dx<0 || x+dx>=COLS || y+dy>=ROWS
-      )));
+    async function payThenStart(btn){
+      try{
+        btn.disabled=true;
+        await requiredPayment();
+        startGame();
+      }catch(e){statusEl.innerHTML+="<div>Payment cancelled or failed.</div>";}
+      finally{btn.disabled=false;}
     }
 
-    function place(){
-      current.shape.forEach((r,dy)=>r.forEach((v,dx)=>{
-        if(v) grid[current.y+dy][current.x+dx]=current.type;
-      }));
-    }
-
-    function clearLines(){
-      let cleared = 0;
-      grid = grid.filter(r=>{
-        if(r.every(c=>c)) { cleared++; return false; }
-        return true;
-      });
-      while(grid.length<ROWS) grid.unshift(Array(COLS).fill(0));
-      if (cleared > 0) {
-        score += cleared * 100;
-        document.getElementById("score").textContent = "Score: " + score;
-      }
-    }
-
-    function draw(){
-      ctx.clearRect(0,0,canvas.width,canvas.height);
-      grid.forEach((r,y)=>r.forEach((c,x)=>{
-        if(c){
-          ctx.fillStyle = COLORS[c];
-          ctx.fillRect(x*TILE,y*TILE,TILE-1,TILE-1);
-        }
-      }));
-      ctx.fillStyle = COLORS[current.type];
-      current.shape.forEach((r,dy)=>r.forEach((v,dx)=>{
-        if(v) ctx.fillRect((current.x+dx)*TILE,(current.y+dy)*TILE,TILE-1,TILE-1);
-      }));
-    }
-
-    function step(){
-      if(!collide(current.x,current.y+1,current.shape)) current.y++;
-      else {
-        place();
-        clearLines();
-        current = newPiece();
-        if(collide(current.x,current.y,current.shape)){
-          alert("Game Over! Final Score: " + score);
-          startGame(); // restart
-        }
-      }
-    }
-
-    function update(t=0){
-      const dt = t - dropTimer;
-      if(dt > dropInterval){
-        step();
-        dropTimer = t;
-      }
-      draw();
-      requestAnimationFrame(update);
-    }
-
-    function rotate(shape){
-      return shape[0].map((_,i)=>shape.map(r=>r[i]).reverse());
-    }
-
-    function initGrid(){
-      grid = Array.from({length:ROWS},()=>Array(COLS).fill(0));
-    }
-
-    function startGame(){
-      document.getElementById("intro").style.display = "none";
-      document.getElementById("score").style.display = "block";
-      canvas = document.getElementById("board");
-      canvas.style.display = "block";
-      canvas.width = COLS*TILE;
-      canvas.height = ROWS*TILE;
-      ctx = canvas.getContext("2d");
-      score = 0;
-      initGrid();
-      current = newPiece();
-      dropTimer = 0;
-      dropInterval = 600;
-      document.getElementById("score").textContent = "Score: 0";
-      update();
-    }
-
-    document.getElementById("play").addEventListener("click", startGame);
-
-    document.addEventListener("keydown",e=>{
-      if(!current) return;
-      if(e.key==="ArrowLeft"&&!collide(current.x-1,current.y,current.shape)) current.x--;
-      else if(e.key==="ArrowRight"&&!collide(current.x+1,current.y,current.shape)) current.x++;
-      else if(e.key==="ArrowDown"&&!collide(current.x,current.y+1,current.shape)) current.y++;
-      else if(e.key==="ArrowUp"){
-        const r = rotate(current.shape);
-        if(!collide(current.x,current.y,r)) current.shape = r;
-      }
-    });
+    playBtn.addEventListener("click",e=>{e.preventDefault();payThenStart(playBtn);});
   </script>
 </body>
 </html>
