@@ -10,9 +10,9 @@
     "iconUrl": "https://tetris-farcaster.vercel.app/tetris-icon.png",
     "homeUrl": "https://tetris-farcaster.vercel.app/",
     "imageUrl": "https://tetris-farcaster.vercel.app/tetris-cover.png",
-    "buttonTitle": "Play Now",
+    "buttonTitle": "Play Tetris",
     "splashImageUrl": "https://tetris-farcaster.vercel.app/tetris-splash.png",
-    "splashBackgroundColor": "#000000",
-    "description": "Play the classic Tetris directly inside Farcaster — rotate, drop, and clear lines to win!"
+    "splashBackgroundColor": "#0b0020",
+    "description": "Play the classic Tetris inside Farcaster. Pay a small Base fee, then drop blocks to score!"
   }
 }
