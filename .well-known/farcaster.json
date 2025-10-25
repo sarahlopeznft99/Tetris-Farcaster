@@ -6,9 +6,9 @@
   },
   "miniapp": {
     "version": "1",
-    "name": "Puzzle Bobble",
+    "name": "Tetris",
     "iconUrl": "https://play-lh.googleusercontent.com/hBHq2sqUokIyoMyhsLhjJELPn2sUKt3gKXMZtuTgwS2ovrhG5J0nmKT3acROB_q0zTo=w600-h300-pc0xffffff-pd",
-    "homeUrl": "https://puzzle-bobble.vercel.app/",
+    "homeUrl": "https://tetris-farcaster.vercel.app/",
     "imageUrl": "https://play-lh.googleusercontent.com/hBHq2sqUokIyoMyhsLhjJELPn2sUKt3gKXMZtuTgwS2ovrhG5J0nmKT3acROB_q0zTo=w600-h300-pc0xffffff-pd",
     "buttonTitle": "Start GAME",
     "splashImageUrl": "https://projects.arduinocontent.cc/cover-images/aec6b979-c133-4793-81b3-3df2fe863062.jpg",
